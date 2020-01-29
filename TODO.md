@@ -1,0 +1,11 @@
+﻿Spaghetti Exploit Framework:
+	- C# client:
+		+ implementare upload e download di file dal Python File Server
+	- Python C2 Server
+		+ implementare comando help
+		+ implementare comando powershell [!!!] PROBLEMA: No output .. capire la problematica e reimplementare
+		+ implementare comando upload/download
+	- Python File Server
+		+ gestione richieste POST e GET dei file (download/upload)
+		
+	+++ IMPLEMENTARE HTTPS

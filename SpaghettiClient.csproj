@@ -53,5 +53,8 @@
     <None Include="packages.config" />
     <None Include="source\App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TODO.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
