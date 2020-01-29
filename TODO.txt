@@ -6,6 +6,6 @@
 		+ implementare comando powershell [!!!] PROBLEMA: No output .. capire la problematica e reimplementare
 		+ implementare comando upload/download
 	- Python File Server
-		+ gestione richieste POST e GET dei file (download/upload)
+		+ gestione richieste POST e GET dei file (upload/download)
 		
 	+++ IMPLEMENTARE HTTPS
