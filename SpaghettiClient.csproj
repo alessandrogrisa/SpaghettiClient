@@ -54,7 +54,7 @@
     <None Include="source\App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TODO.md" />
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
