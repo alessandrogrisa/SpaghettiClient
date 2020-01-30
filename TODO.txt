@@ -1,10 +1,8 @@
 ﻿Spaghetti Exploit Framework:
 	- C# client:
-		+ implementare upload e download di file dal Python File Server
+		+ implementare comando upload
 	- Python C2 Server
 		+ interactive cmds protection
-		+ implementare comando upload/download
 	- Python File Server
-		+ gestione richieste POST e GET dei file (download/upload)
 		
 	+++ IMPLEMENTARE HTTPS
