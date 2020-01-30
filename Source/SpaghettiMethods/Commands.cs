@@ -75,22 +75,25 @@ class Commands
     public string RunPSH(string cmd, string location)
     {
         cmd = cmd.Substring(11);
-
-        Runspace runspace = RunspaceFactory.CreateRunspace();
-        runspace.Open();
-        Pipeline pipeline = runspace.CreatePipeline();
-        string scriptCommand = String.Format("Set-Location -Path {0}; {1}", location, cmd);
-        pipeline.Commands.AddScript(scriptCommand);
-        pipeline.Commands.Add("Out-String");
-
-        StringBuilder output = new StringBuilder();
-
-        foreach (PSObject obj in pipeline.Invoke())
+        if (Utilities.CliProtection(cmd))
         {
-            output.AppendLine(obj.ToString());
-        }
+            Runspace runspace = RunspaceFactory.CreateRunspace();
+            runspace.Open();
+            Pipeline pipeline = runspace.CreatePipeline();
+            string scriptCommand = String.Format("Set-Location -Path {0}; {1}", location, cmd);
+            pipeline.Commands.AddScript(scriptCommand);
+            pipeline.Commands.Add("Out-String");
 
-        runspace.Close();
-        return output.ToString();
+            StringBuilder output = new StringBuilder();
+
+            foreach (PSObject obj in pipeline.Invoke())
+            {
+                output.AppendLine(obj.ToString());
+            }
+
+            runspace.Close();
+            return output.ToString();
+        }
+        return "!#!WARNING: Interactive Command Detected, CliProtection Activated";
     }
 }
