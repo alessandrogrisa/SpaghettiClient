@@ -35,7 +35,32 @@ class Utilities
     // Interactive Command Line Protection
     public static bool CliProtection(string cmd)
     {
-        return true;
+        bool check;
+        cmd = cmd.ToLower();
+        cmd.Replace(".exe", "");
+        switch (cmd)
+        {
+            case "cmd":
+                check = false;
+                break;
+            case "nslookup":
+                check = false;
+                break;
+            case "powershell":
+                check = false;
+                break;
+            case "python":
+                check = false;
+                break;
+            case "wmic":
+                check = false;
+                break;
+            default:
+                check = true;
+                break;
+        }
+
+        return check;
     }
 
     // Check Root Dir
