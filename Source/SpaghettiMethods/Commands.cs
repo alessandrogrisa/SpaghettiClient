@@ -53,22 +53,26 @@ class Commands
     // Run CMD Command
     public (string, string) RunCMD(string cmd, string location)
     {
-        Process process = new Process();
+        if (Utilities.CliProtection(cmd))
+        {
+            Process process = new Process();
 
-        process.StartInfo.FileName = "cmd.exe";
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.CreateNoWindow = true;
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.WorkingDirectory = Utilities.IsRoot(location);
-        process.StartInfo.Arguments = string.Concat("/C ", cmd);
-        process.Start();
-        process.WaitForExit();
-        string output = process.StandardOutput.ReadToEnd();
-        string error = process.StandardError.ReadToEnd();
-        process.Close();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.WorkingDirectory = Utilities.IsRoot(location);
+            process.StartInfo.Arguments = string.Concat("/C ", cmd);
+            process.Start();
+            process.WaitForExit();
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            process.Close();
 
-        return (output, error);
+            return (output, error);
+        }
+        return ("!#!WARNING: Interactive Command Detected! CliProtection Triggered", "");
     }
 
     // Run PSH Commands
