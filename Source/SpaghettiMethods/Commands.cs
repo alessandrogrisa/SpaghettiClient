@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
@@ -76,7 +77,7 @@ class Commands
     }
 
     // Run PSH Commands
-    public string RunPSH(string cmd, string location)
+    public (string, string) RunPSH(string cmd, string location)
     {
         cmd = cmd.Substring(11);
         if (Utilities.CliProtection(cmd))
@@ -89,15 +90,25 @@ class Commands
             pipeline.Commands.Add("Out-String");
 
             StringBuilder output = new StringBuilder();
+            string error = "";
 
-            foreach (PSObject obj in pipeline.Invoke())
+            try
             {
-                output.AppendLine(obj.ToString());
+                Collection<PSObject> objects = pipeline.Invoke();
+                
+                foreach (PSObject obj in objects)
+                {
+                    output.AppendLine(obj.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
             }
 
             runspace.Close();
-            return output.ToString();
+            return (output.ToString(), error);
         }
-        return "!#!WARNING: Interactive Command Detected! CliProtection Triggered";
+        return ("!#!WARNING: Interactive Command Detected! CliProtection Triggered", "");
     }
 }
