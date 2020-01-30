@@ -94,6 +94,6 @@ class Commands
             runspace.Close();
             return output.ToString();
         }
-        return "!#!WARNING: Interactive Command Detected, CliProtection Activated";
+        return "!#!WARNING: Interactive Command Detected, CliProtection Triggered";
     }
 }
