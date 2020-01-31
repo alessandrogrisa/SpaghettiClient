@@ -18,6 +18,20 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             dst.write(s.rfile.read(length))
         s.send_response(200)
         s.end_headers()
+
+    def do_GET(s):
+        global sessionid
+        s.send_response(200)
+        s.send_header('Content-type', 'application/octet-stream')
+
+        filepath = "."+s.path
+        in_file = open(filepath, "rb")
+        data = in_file.read()
+        in_file.close()
+
+        s.end_headers()
+        s.wfile.write(data)
+
 # Colors
 class bcolors:
     OKGREEN = '\033[92m'

