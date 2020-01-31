@@ -180,27 +180,41 @@ class Utilities
     // HTTP Post Request
     public static string Post(string uri, string data, string contentType = "text/html", string method = "POST")
     {
-        byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+        try { 
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-        request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-        request.ContentLength = dataBytes.Length;
-        request.ContentType = contentType;
-        request.Method = method;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.ContentLength = dataBytes.Length;
+            request.ContentType = contentType;
+            request.Method = method;
 
-        // Ignore SSL Certificate errors
-        ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            // Ignore SSL Certificate errors
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-        using (Stream requestBody = request.GetRequestStream())
-        {
-            requestBody.Write(dataBytes, 0, dataBytes.Length);
+            using (Stream requestBody = request.GetRequestStream())
+            {
+                requestBody.Write(dataBytes, 0, dataBytes.Length);
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
-
-        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-        using (Stream stream = response.GetResponseStream())
-        using (StreamReader reader = new StreamReader(stream))
+        catch (WebException e)
         {
-            return reader.ReadToEnd();
+            if (e.Status == WebExceptionStatus.Timeout)
+            {
+                Post(uri, "#!#Request Timeout.. try again!");
+            }
+            else
+            {
+                Post(uri, "#!# -- Failed --");
+            }
+            return "";
         }
     }
 
