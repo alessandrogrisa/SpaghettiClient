@@ -24,6 +24,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         content = s.rfile.read(length)
         if content.startswith('#!#'):
             content = "{}{}{}".format(bcolors.FAIL, content[3:], bcolors.ENDC)
+        elif content.startswith('!#!'):
+            content = "{}{}{}".format(bcolors.WARNING, content[3:], bcolors.ENDC)
         print content
 
     def log_message(self, format, *args):
