@@ -103,6 +103,9 @@ class Utilities
             request.Headers.Add("Session-Id", sessionid);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
+            // Ignore SSL Certificate errors
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream))
@@ -130,6 +133,9 @@ class Utilities
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(target);
             request.Headers.Add("Current-Location", location);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            // Ignore SSL Certificate errors
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
@@ -175,6 +181,8 @@ class Utilities
         request.ContentType = contentType;
         request.Method = method;
 
+        // Ignore SSL Certificate errors
+        ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
         using (Stream requestBody = request.GetRequestStream())
         {
@@ -202,6 +210,9 @@ class Utilities
         {
             using (var client = new WebClient())
             {
+                // Ignore SSL Certificate errors
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
                 client.Headers.Add("Session-Id", sessionid);
 
                 string[] splitted = filename.Split(Path.DirectorySeparatorChar);

@@ -8,10 +8,10 @@ namespace SpaghettiClient
         static void Main(string[] args)
         {
             string host = "10.200.32.131"; // change the host ip
-            int fs_port = 8088; // change the fileserver port
+            int fs_port = 4443; // change the fileserver port
 
-            string url = String.Format("http://{0}/", host);
-            string fs_url = String.Format("http://{0}:{1}/", host, fs_port);
+            string url = String.Format("https://{0}/", host);
+            string fs_url = String.Format("https://{0}:{1}/", host, fs_port);
             string location = Directory.GetCurrentDirectory();
             string user = Environment.UserName;
             string machinename = Environment.MachineName;
