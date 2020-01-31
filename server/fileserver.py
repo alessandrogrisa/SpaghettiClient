@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import BaseHTTPServer
 import os
+import ssl
 
 HOST = '10.200.32.131'
-PORT = 8088
+PORT = 4443
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
@@ -45,6 +46,9 @@ if __name__ == '__main__':
         os.mkdir('Storage')
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST, PORT), Handler)
+
+    # Ssl implementation
+    httpd.socket = ssl.wrap_socket(httpd.socket, certfile='./Certificate/server.pem', server_side=True)
 
     try:
         httpd.serve_forever()
