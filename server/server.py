@@ -2,9 +2,10 @@
 import BaseHTTPServer
 import readline
 import os
+import ssl
 
 HOST = '10.200.32.131'
-PORT = 80
+PORT = 443
 
 sessionid = None
 
@@ -77,6 +78,9 @@ class bcolors:
 if __name__ == '__main__':
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST, PORT), Handler)
+
+    # Ssl implementation
+    httpd.socket = ssl.wrap_socket(httpd.socket, certfile='./Certificate/server.pem', server_side=True)
 
     try:
         httpd.serve_forever()
