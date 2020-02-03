@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.DirectoryServices.AccountManagement;
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Security.Principal;
@@ -60,8 +61,10 @@ namespace CursedSpaghetti
             Utilities.Post(url, sb.ToString());
         }
 
+
         class Utils
         {
+
             public static string GetRegValue(string hive, string path, string value)
             {
                 string regKeyValue = "";
