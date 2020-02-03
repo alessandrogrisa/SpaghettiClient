@@ -1,4 +1,4 @@
 ﻿Spaghetti Exploit Framework:
-	- C# client:
+	- C# client
 	- Python C2 Server
 	- Python File Server
