@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 using Weapons;
 
 namespace CursedSpaghetti
@@ -134,7 +135,8 @@ namespace CursedSpaghetti
                     Post(uri, "#!#Request Timeout.. try again!");
                     return Get(uri, location, sessionid);
                 }
-                else throw;
+                Thread.Sleep(60000); // sleep for 1 min
+                return Get(uri, location, sessionid);
             }
         }
 
