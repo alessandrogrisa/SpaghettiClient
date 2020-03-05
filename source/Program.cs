@@ -66,7 +66,7 @@ namespace SpaghettiClient
                 }
                 else if (cmd.ToLower().StartsWith("weapon "))
                 {
-                    Utilities.ChooseWeapon(url, cmd);
+                    Utilities.ChooseWeapon(fs_url, url, cmd, sessionid);
                 }
                 else if (cmd.ToLower().StartsWith("powershell "))
                 {

@@ -12,19 +12,19 @@ namespace Weapons
         // Basic System Information Gathering
         public static void ListBasicOSInfo(string url)
         {
-            string ProductName = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
-            string EditionID = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "EditionID");
-            string ReleaseId = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
-            string BuildBranch = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "BuildBranch");
-            string CurrentMajorVersionNumber = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber");
-            string CurrentVersion = Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion");
+            string ProductName = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
+            string EditionID = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "EditionID");
+            string ReleaseId = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
+            string BuildBranch = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "BuildBranch");
+            string CurrentMajorVersionNumber = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber");
+            string CurrentVersion = W_Utils.GetRegValue("HKLM", "Software\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion");
 
             string arch = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
             string userName = WindowsIdentity.GetCurrent().Name;
             string ProcessorCount = Environment.ProcessorCount.ToString();
 
-            bool isHighIntegrity = Utils.IsHighIntegrity();
-            bool isLocalAdmin = Utils.IsLocalAdmin(userName);
+            bool isHighIntegrity = W_Utils.IsHighIntegrity();
+            bool isLocalAdmin = W_Utils.IsLocalAdmin(userName);
 
             DateTime now = DateTime.UtcNow;
             DateTime boot = now - TimeSpan.FromMilliseconds(Environment.TickCount);

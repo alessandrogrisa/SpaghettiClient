@@ -7,9 +7,9 @@ namespace Weapons
     // In-Memory Injection
     class Injector
     {
-        public static string Inject(string assemblyB64)
+        public static string Inject(string target)
         {
-            var bytes = Convert.FromBase64String(assemblyB64);
+            byte[] bytes = W_Utils.GetDLLBytes(target);
             var assembly = Assembly.Load(bytes);
             StringBuilder output = new StringBuilder();
             foreach (var type in assembly.GetTypes())
