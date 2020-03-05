@@ -1,4 +1,6 @@
 ﻿Spaghetti Exploit Framework:
 	- C# client
+	--> In memory injector (DLL, Shellcode?)
 	- Python C2 Server
 	- Python File Server
+	--> Dll Hosting (dedicated directory?)
