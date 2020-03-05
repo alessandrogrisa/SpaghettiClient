@@ -99,7 +99,7 @@ namespace CursedSpaghetti
         {
             weapon = weapon.Substring(7);
 
-            switch (weapon.Split(' ')[1].ToLower())
+            switch (weapon.Split(' ')[0].ToLower())
             {
                 case "basicenum":
                     Gatherer.ListBasicOSInfo(url);
