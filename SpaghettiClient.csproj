@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="source\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="source\SpaghettiMethods\Weapons\Injector_Utils.cs" />
     <Compile Include="source\SpaghettiMethods\Weapons\Injector.cs" />
     <Compile Include="source\SpaghettiMethods\Weapons\W_Utils.cs" />
     <Compile Include="source\SpaghettiMethods\Commands.cs" />
