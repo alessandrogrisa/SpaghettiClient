@@ -1,14 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace Weapons
 {
     // In-Memory Injection
     class Injector
     {
-        public static string Inject(string target)
+        public static string run(string target)
         {
             byte[] bytes = W_Utils.GetDLLBytes(target);
 
@@ -16,23 +14,11 @@ namespace Weapons
             {
                 try
                 {
-                    var assembly = Assembly.Load(bytes);
+                    // Get PID
 
-                    foreach (var type in assembly.GetTypes())
-                    {
-                        object instance = Activator.CreateInstance(type);
-                        object[] args = new object[] { new string[] { "" } };
-
-                        try
-                        {
-                            type.GetMethod("Main").Invoke(instance, args);
-                            return String.Format("[*] Loaded Type {0}", type);
-                        }
-                        catch { }
-                    }
+                    // inject
                 }
                 catch { }
-                
                 
                 return "#!#Injection Failed";
             }
