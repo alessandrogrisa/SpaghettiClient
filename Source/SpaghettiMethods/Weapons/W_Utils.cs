@@ -1,9 +1,5 @@
-﻿using Microsoft.Win32;
-using System;
-using System.DirectoryServices.AccountManagement;
-using System.IO;
+﻿using System.IO;
 using System.Net;
-using System.Security.Principal;
 
 namespace Weapons
 {
